@@ -1,0 +1,10 @@
+@import "tailwindcss";
+body {
+  background-color: black;
+}
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden; /* بيمنع أي سكرول أفقي نهائياً */
+  margin: 0;
+  padding: 0;
+}
