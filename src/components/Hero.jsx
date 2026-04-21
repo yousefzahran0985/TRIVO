@@ -78,7 +78,7 @@ const Hero = () => {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top", // هيبدأ من أول الصفحة فوق
-        end: "+=700%",    // زودت المسافة شوية عشان الفيديو يكون أهدى
+        end: "+=600%",    // زودت المسافة شوية عشان الفيديو يكون أهدى
         scrub: 0.5,       // خليته 0.5 عشان الاستجابة تكون أسرع للماوس
         pin: true,
         // markers:true,
@@ -98,6 +98,7 @@ const Hero = () => {
 
 
   return (
+    <>
   <section ref={sectionRef} className="bg-black w-full overflow-hidden flex items-center justify-center">
     {/* الكونتينر اللي هيحكم العرض */}
     <div className="w-full lg:w-[86%] max-w-[1700px] mx-auto relative h-screen flex items-center justify-center">
@@ -109,6 +110,13 @@ const Hero = () => {
       <div className="absolute -right-7 lg:-right-14 top-0 w-10 lg:w-20 h-full z-20 md:bg-black from-black to-transparent blur-[30px]"></div>
     </div>
   </section>
+
+  <section className="relative z-30 h-[1100px] bg-white -mt-[50vh] shadow-[0_-50px_100px_rgba(0,0,0,0.5)] flex items-center justify-center rounded-t-[70%_30px] md:rounded-t-[70%_100px] shadow-[0_-30px_50px_rgba(0,0,0,0.2)]">
+      <h1 className="md:text-[130px] text-5xl font-bold text-center">
+        New Section
+      </h1>
+    </section>
+    </>
 );
 };
 
