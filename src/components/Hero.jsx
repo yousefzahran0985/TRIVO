@@ -43,16 +43,21 @@ const Hero = () => {
     const renderFrame = (index) => {
   const img = images[Math.round(index)];
   if (img && img.complete) {
-    // 1. حساب الـ Scale بحيث الصورة تظهر بالكامل (Contain)
-    const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+    let scale;
     
-    // 2. توسيط الصورة في نص الشاشة بالظبط
+    // لو الشاشة أصغر من 768px (موبيل)
+    if (window.innerWidth < 768) {
+      // استخدم Contain عشان الفيديو يظهر كامل وميتقصش
+      scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+    } else {
+      // في الشاشات الكبيرة (md و lg) استخدم Cover عشان يملأ العرض كامل
+      scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+    }
+
     const x = (canvas.width / 2) - (img.width / 2) * scale;
     const y = (canvas.height / 2) - (img.height / 2) * scale;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // 3. رسم الصورة بالمقاس الجديد
     context.drawImage(img, x, y, img.width * scale, img.height * scale);
   }
 };
@@ -73,9 +78,10 @@ const Hero = () => {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top", // هيبدأ من أول الصفحة فوق
-        end: "+=800%",    // زودت المسافة شوية عشان الفيديو يكون أهدى
+        end: "+=700%",    // زودت المسافة شوية عشان الفيديو يكون أهدى
         scrub: 0.5,       // خليته 0.5 عشان الاستجابة تكون أسرع للماوس
         pin: true,
+        // markers:true,
         anticipatePin: 1, // بيساعد في منع القفزات المفاجئة عند التثبيت
         onUpdate: () => renderFrame(airbnb.frame),
       }
@@ -92,10 +98,18 @@ const Hero = () => {
 
 
   return (
-    <section ref={sectionRef} className="bg-black">
-      <canvas ref={canvasRef} className="max-w-full h-screen block" />
-    </section>
-  );
+  <section ref={sectionRef} className="bg-black w-full overflow-hidden flex items-center justify-center">
+    {/* الكونتينر اللي هيحكم العرض */}
+    <div className="w-full lg:w-[86%] max-w-[1700px] mx-auto relative h-screen flex items-center justify-center">
+      <div className="absolute -left-7 lg:-left-14 top-0 w-10 lg:w-20 h-full z-20 md:bg-black from-black to-transparent blur-[30px]"></div>
+        <canvas 
+          ref={canvasRef} 
+          className="block w-full h-full" 
+        />
+      <div className="absolute -right-7 lg:-right-14 top-0 w-10 lg:w-20 h-full z-20 md:bg-black from-black to-transparent blur-[30px]"></div>
+    </div>
+  </section>
+);
 };
 
 export default Hero;
