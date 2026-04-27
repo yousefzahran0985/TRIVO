@@ -103,12 +103,6 @@ const Hero2 = () => {
 const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
 
 
-
-// 3. التعديل الجوهري في الـ onDragMove
-
-
-
-
   const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
@@ -217,8 +211,6 @@ const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
     });
   }, []);
 
-  // const getX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
-
   // 2. تعديل الـ onDragStart
 const onDragStart = useCallback((e) => {
   if (isAnimating.current) return;
@@ -242,25 +234,27 @@ const onDragStart = useCallback((e) => {
   const dx = currentX - dragStart.current.x;
   const dy = currentY - dragStart.current.y;
 
-  // تحديد الاتجاه في أول حركة (Threshold)
+  // تحديد الاتجاه في أول حركة
   if (!touchDirection.current) {
-    if (Math.abs(dx) > Math.abs(dy)) {
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
       touchDirection.current = 'horizontal';
-    } else if (Math.abs(dy) > 5) { // لو نزل أكتر من 5 بكسل عمودي
+    } else if (Math.abs(dy) > 10) {
       touchDirection.current = 'vertical';
-      isDragging.current = false; // وقف السحب تماماً
+      isDragging.current = false; // فك السحب فوراً عشان السكرول يشتغل
       return;
     }
   }
 
-  // لو الاتجاه طلع عمودي، اخرج وما تعملش أي حاجة في الصور
-  if (touchDirection.current === 'vertical') return;
-
-  // منع السكرول الطبيعي فقط لو المستخدم بيتحرك أفقي (عشان الـ Slider يشتغل)
-  if (touchDirection.current === 'horizontal' && e.cancelable) {
-    // e.preventDefault(); // اختيارية حسب رغبتك في منع اهتزاز الصفحة
+  // التعديل السحري هنا:
+  if (touchDirection.current === 'horizontal') {
+    // لو بنقلب صور، نمنع السكرول الرأسي عشان الصفحة متهزش
+    if (e.cancelable) e.preventDefault(); 
+  } else {
+    // لو الاتجاه رأسي، اخرج فوراً وسيب المتصفح يعمل سكرول طبيعي
+    return;
   }
 
+  // باقي كود الـ Progress بتاعك زي ما هو...
   const W = mountRef.current.clientWidth;
   const rawProg = Math.abs(dx) / (W * 0.6);
   const progress = Math.min(rawProg, 1);
