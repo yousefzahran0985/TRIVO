@@ -1,4 +1,6 @@
 @import "tailwindcss";
+
+
 body {
   background-color: black;
 }
@@ -7,4 +9,18 @@ html, body {
   overflow-x: hidden; /* بيمنع أي سكرول أفقي نهائياً */
   margin: 0;
   padding: 0;
+}
+.hero-container {
+  width: 100%;
+  height: 100vh; /* لازم يكون فيه ارتفاع واضح */
+  overflow: hidden;
+}
+canvas {
+  display: block; /* عشان ميسبش مسافات غريبة */
+}
+#canvas-container {
+    display: block;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh;
 }
