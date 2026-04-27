@@ -10,26 +10,27 @@ const Header = () => {
   const headerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false); // حالة القائمة في الموبايل
 
-  useGSAP(() => {
-    // أنميشن إخفاء وإظهار الهيدر عند السكرول
-    const showAnim = gsap.from(headerRef.current, { 
-      yPercent: -150,
-      paused: true,
-      duration: 0.4,
-      ease: "power2.out"
-    }).progress(1);
+  // جوه Header.jsx
+useGSAP(() => {
+  const showAnim = gsap.from(headerRef.current, { 
+    yPercent: -150,
+    paused: true,
+    duration: 0.3, // سرعة أكبر عشان الاستجابة
+    ease: "none" // "none" أفضل في السكرول لسرعة الاستجابة
+  }).progress(1);
 
-    ScrollTrigger.create({
-      start: "top top",
-      end: "max",
-      onUpdate: (self) => {
-        // لو المنيو مفتوحة، ميتخفاش الهيدر وأنت بتسكرل
-        if (!isOpen) {
-          self.direction === -1 ? showAnim.play() : showAnim.reverse();
-        }
+  ScrollTrigger.create({
+    start: "top top",
+    end: 99999,
+    onUpdate: (self) => {
+      if (!isOpen) {
+        // إضافة check بسيط للتأكد إن الحركة مش محبوسة
+        if (self.direction === -1) showAnim.play();
+        else showAnim.reverse();
       }
-    });
-  }, { scope: headerRef, dependencies: [isOpen] });
+    }
+  });
+}, { scope: headerRef, dependencies: [isOpen] });
 
   const navLinks = ['Collection', 'About', 'Archive', 'Contact'];
 
