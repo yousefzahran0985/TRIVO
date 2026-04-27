@@ -382,18 +382,19 @@ useGSAP(() => {
 
       <div className="absolute inset-0 z-2 pointer-events-none bg-linear-to-t from-black/70 via-transparent to-black/20 " />
 
-      <div className="absolute top-8 right-10 z-10 text-white/50 text-[0.75rem] tracking-[0.3em] font-mono pointer-events-none">
+      <div className="absolute top-23 right-10 z-10 text-white/50 text-[0.75rem] tracking-[0.3em] font-mono pointer-events-none">
         {String(activeIdx + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
       </div>
 
       <div 
         ref={textContainerRef} 
         className="absolute md:top-[50%] bottom-0 md:left-12 md:-translate-y-1/2 z-10 max-md:w-full p-5 pb-17"
-        // منع السحب عند الضغط بالماوس
+        
+      >
+        {/* // منع السحب عند الضغط بالماوس
         onMouseDown={(e) => e.stopPropagation()}
         // منع السحب عند اللمس على الموبايل
-        onTouchStart={(e) => e.stopPropagation()}
-      >
+        onTouchStart={(e) => e.stopPropagation()} */}
   <p className="text-white/50 text-[0.7rem] tracking-[0.4em] font-mono mb-2 overflow-hidden">
     <span className="inline-block translate-y-full italic-text">DISRUPTIVE DESIGN STUDIO </span>
   </p>

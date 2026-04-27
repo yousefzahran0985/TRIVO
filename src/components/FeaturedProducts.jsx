@@ -74,7 +74,7 @@ const FeaturedProducts = () => {
       </div>
 
       {/* شبكة المنتجات */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:gap-2">
         {PRODUCTS.map((product) => (
           <div 
             key={product.id} 
@@ -92,7 +92,7 @@ const FeaturedProducts = () => {
             </div>
 
             {/* بيانات المنتج */}
-            <h3 className="text-white text-lg font-bold mb-2 uppercase tracking-tight group-hover:text-red-500 transition-colors">
+            <h3 className="text-white text-lg font-normal text-sm mb-2 uppercase tracking-tight group-hover:text-red-500 transition-colors">
               {product.name}
             </h3>
             

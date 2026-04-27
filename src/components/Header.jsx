@@ -37,7 +37,7 @@ const Header = () => {
     <>
       <header 
         ref={headerRef} 
-        className="fixed top-4 left-0 right-0 mx-auto w-[92%] z-[100] px-6 md:px-10 py-4 flex justify-between items-center bg-black/60 backdrop-blur-md border border-white/10 rounded-full shadow-2xl"
+        className="fixed top-4 left-0 right-0 mx-auto w-[92%] z-[100] px-6 md:px-10 py-4 flex justify-between items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-2xl"
       >
         {/* اللوجو */}
         <div className="flex items-center gap-2 group cursor-pointer relative z-[101]">
