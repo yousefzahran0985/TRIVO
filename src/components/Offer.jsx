@@ -38,7 +38,7 @@ const Offer = () => {
   return (
     <section 
       ref={offerRef} 
-      className="relative w-full h-[70vh] flex items-center justify-center overflow-hidden bg-black"
+      className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden bg-black"
     >
       {/* الصورة الخلفية (تقدر تحط صورة ملابس أو موديل) */}
       <div 

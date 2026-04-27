@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-
+import { FaFacebookF, FaTiktok, FaWhatsapp, FaInstagram } from 'react-icons/fa';
 const Contact = () => {
   const containerRef = useRef(null);
 
@@ -33,7 +33,7 @@ const Contact = () => {
         {/* الجانب الأيسر: معلومات التواصل */}
         <div className="space-y-12">
           <div className="contact-item">
-            <h2 className="text-6xl font-black tracking-tighter mb-6 uppercase">
+            <h2 className="md:text-6xl text-5xl font-black tracking-tighter mb-6 uppercase">
               Let's build <br /> <span className="text-red-600">Something</span> <br /> disruptive.
             </h2>
             <p className="text-white/50 text-lg max-w-sm">
@@ -44,15 +44,46 @@ const Contact = () => {
           <div className="contact-item space-y-6">
             <div>
               <h4 className="text-red-500 font-mono text-xs uppercase tracking-[0.3em] mb-2">// Email us</h4>
-              <p className="text-2xl font-bold">hello@disruptive.com</p>
+              <p className="text-2xl font-bold">MohamedTamer@gmail.com</p>
             </div>
             <div>
               <h4 className="text-red-500 font-mono text-xs uppercase tracking-[0.3em] mb-2">// Call us</h4>
-              <p className="text-2xl font-bold">+20 123 456 7890</p>
+              <p className="text-2xl font-bold">+20 15 52984167</p>
             </div>
             <div>
-              <h4 className="text-red-500 font-mono text-xs uppercase tracking-[0.3em] mb-2">// Visit us</h4>
-              <p className="text-2xl font-bold">123 Design St, Maadi <br /> Cairo, Egypt</p>
+              <h4 className="text-red-500 font-mono text-xs uppercase tracking-[0.3em] mb-2">// Social Media</h4>
+              <div className="w-[1px] h-8 bg-white/20 hidden md:block" />
+
+            {/* أيقونات السوشيال ميديا */}
+            <div className="flex gap-10 pt-2">
+              <a 
+                href="https://facebook.com" target="_blank" rel="noreferrer"
+                className="text-white/50 hover:text-[#1877F2] transition-all duration-300 transform hover:scale-125"
+              >
+                <FaFacebookF size={20} />
+              </a>
+              
+              <a 
+                href="https://tiktok.com" target="_blank" rel="noreferrer"
+                className="text-white/50 hover:text-white transition-all duration-300 transform hover:scale-125"
+              >
+                <FaTiktok size={20} />
+              </a>
+
+              <a 
+                href="https://wa.me/yournumber" target="_blank" rel="noreferrer"
+                className="text-white/50 hover:text-[#25D366] transition-all duration-300 transform hover:scale-125"
+              >
+                <FaWhatsapp size={22} />
+              </a>
+
+              <a 
+                href="https://instagram.com" target="_blank" rel="noreferrer"
+                className="text-white/50 hover:text-[#E4405F] transition-all duration-300 transform hover:scale-125"
+              >
+                <FaInstagram size={22} />
+              </a>
+            </div>
             </div>
           </div>
         </div>
@@ -63,9 +94,8 @@ const Contact = () => {
             <div className="space-y-2">
               <label className="text-[10px] uppercase tracking-widest text-white/40 ml-1">Full Name</label>
               <input 
-                type="text" 
-                placeholder="YOUSEF ZAHRAN" 
-                className="w-full bg-white/5 border border-white/10 p-4 text-white focus:border-red-500 outline-none transition-colors"
+                type="text"  
+                className="w-full bg-white/5 border border-white/10 lg:p-3 p-2 text-white focus:border-red-500 outline-none transition-colors"
               />
             </div>
 
@@ -73,8 +103,7 @@ const Contact = () => {
               <label className="text-[10px] uppercase tracking-widest text-white/40 ml-1">Email Address</label>
               <input 
                 type="email" 
-                placeholder="YOUR@EMAIL.COM" 
-                className="w-full bg-white/5 border border-white/10 p-4 text-white focus:border-red-500 outline-none transition-colors"
+                className="w-full bg-white/5 border border-white/10 lg:p-3 p-2 text-white focus:border-red-500 outline-none transition-colors"
               />
             </div>
 
@@ -82,12 +111,11 @@ const Contact = () => {
               <label className="text-[10px] uppercase tracking-widest text-white/40 ml-1">Message</label>
               <textarea 
                 rows="5" 
-                placeholder="WHAT'S ON YOUR MIND?" 
                 className="w-full bg-white/5 border border-white/10 p-4 text-white focus:border-red-500 outline-none transition-colors resize-none"
               ></textarea>
             </div>
 
-            <button className="w-full bg-red-600 text-white font-black py-4 uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500">
+            <button className="w-full bg-red-600 text-white font-black md:py-4 py-3 uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500">
               Send Message
             </button>
           </form>
@@ -95,14 +123,9 @@ const Contact = () => {
 
       </div>
 
-      {/* Social Links Footer */}
-      <div className="contact-item mt-32 flex flex-wrap gap-8 border-t border-white/10 pt-10">
-        {['Instagram', 'LinkedIn', 'Twitter', 'Behance'].map((social) => (
-          <a key={social} href="#" className="text-xs font-mono uppercase tracking-widest hover:text-red-500 transition-colors">
-            {social}
-          </a>
-        ))}
-      </div>
+      <div className="heroB flex items-center gap-6 mt-4">
+  
+</div>
 
     </section>
   )

@@ -49,14 +49,22 @@ const fragmentShader = `
 `;
 
 const SLIDES = [
-  {  
+  { 
     img: '/hero4.png', 
-    title: 'wear your ', 
-    subtitle: 'confidence'
+    title: 'ENGINEERED', 
+    subtitle: 'PERFECTION' 
   },
-  { img: '/hero7.png', title: 'BREAK THE GRID' ,subtitle: 'confidence' },
-  { img: '/hero5.png',  title: 'SHATTER REALITY',subtitle: 'confidence' },
-];
+  { 
+    img: '/hero7.png', 
+    title: 'BEYOND THE', 
+    subtitle: 'LIMITS' 
+  },
+  { 
+    img: '/hero5.png',  
+    title: 'DIGITAL', 
+    subtitle: 'EVOLUTION' 
+  },
+];;
 
 const Hero2 = () => {
   const mountRef     = useRef(null);
@@ -71,6 +79,15 @@ const Hero2 = () => {
   const dragStart    = useRef(null);
   const isDragging   = useRef(false);
   const liveProgress = useRef(0);
+  // 1. ضيف الـ Ref ده فوق مع الـ Refs التانية
+const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
+
+
+
+// 3. التعديل الجوهري في الـ onDragMove
+
+
+
 
   const [activeIdx, setActiveIdx] = useState(0);
 
@@ -172,65 +189,96 @@ const Hero2 = () => {
     });
   }, []);
 
-  const getX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
+  // const getX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
 
-  const onDragStart = useCallback((e) => {
-    if (isAnimating.current) return;
-    dragStart.current = getX(e);
-    isDragging.current = true;
-    gsap.killTweensOf(gsapProxy.current);
-  }, []);
+  // 2. تعديل الـ onDragStart
+const onDragStart = useCallback((e) => {
+  if (isAnimating.current) return;
+  dragStart.current = {
+    x: e.touches ? e.touches[0].clientX : e.clientX,
+    y: e.touches ? e.touches[0].clientY : e.clientY
+  };
+  isDragging.current = true;
+  touchDirection.current = null; // ريست للاتجاه مع كل ضغطة جديدة
+  gsap.killTweensOf(gsapProxy.current);
+}, []);
 
   const onDragMove = useCallback((e) => {
-    if (!isDragging.current || dragStart.current === null) return;
-    const mat = materialRef.current;
-    if (!mat) return;
+  if (!isDragging.current || !dragStart.current) return;
+  const mat = materialRef.current;
+  if (!mat) return;
 
-    const dx       = getX(e) - dragStart.current;
-    const W        = mountRef.current.clientWidth;
-    const rawProg  = Math.abs(dx) / (W * 0.6); 
-    const progress = Math.min(rawProg, 1);
-    
-    // يمين = موجب (تقدم)، شمال = سالب (رجوع)
-    const dir = dx > 0 ? 1.0 : -1.0; 
-    const total = SLIDES.length;
-    const cur = currentIdx.current;
+  const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+  const currentY = e.touches ? e.touches[0].clientY : e.clientY;
 
-    // حساب الـ Index التالي بشكل دائري (Infinite Loop)
-    const nextIdx = (cur + (dir > 0 ? 1 : -1) + total) % total;
+  const dx = currentX - dragStart.current.x;
+  const dy = currentY - dragStart.current.y;
 
-    mat.uniforms.uDirection.value      = dir;
-    mat.uniforms.uTextureNext.value    = texturesRef.current[nextIdx];
-    mat.uniforms.uProgress.value       = progress;
-    liveProgress.current               = progress;
-
-    setActiveIdx(progress > 0.5 ? nextIdx : cur);
-  }, []);
-
-  const onDragEnd = useCallback((e) => {
-    if (!isDragging.current) return;
-    isDragging.current = false;
-
-    const mat = materialRef.current;
-    if (!mat) return;
-
-    const dx = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX) - dragStart.current;
-    const dir = dx > 0 ? 1 : -1;
-    const cur = currentIdx.current;
-    const total = SLIDES.length;
-    const prog = liveProgress.current;
-
-    const targetIdx = (cur + (dir > 0 ? 1 : -1) + total) % total;
-
-    if (prog > 0.25) {
-      snapTo(targetIdx, prog);
-    } else {
-      snapBack(prog);
-      setActiveIdx(cur);
+  // تحديد الاتجاه في أول حركة (Threshold)
+  if (!touchDirection.current) {
+    if (Math.abs(dx) > Math.abs(dy)) {
+      touchDirection.current = 'horizontal';
+    } else if (Math.abs(dy) > 5) { // لو نزل أكتر من 5 بكسل عمودي
+      touchDirection.current = 'vertical';
+      isDragging.current = false; // وقف السحب تماماً
+      return;
     }
+  }
 
-    dragStart.current = null;
-  }, [snapTo, snapBack]);
+  // لو الاتجاه طلع عمودي، اخرج وما تعملش أي حاجة في الصور
+  if (touchDirection.current === 'vertical') return;
+
+  // منع السكرول الطبيعي فقط لو المستخدم بيتحرك أفقي (عشان الـ Slider يشتغل)
+  if (touchDirection.current === 'horizontal' && e.cancelable) {
+    // e.preventDefault(); // اختيارية حسب رغبتك في منع اهتزاز الصفحة
+  }
+
+  const W = mountRef.current.clientWidth;
+  const rawProg = Math.abs(dx) / (W * 0.6);
+  const progress = Math.min(rawProg, 1);
+  
+  const dir = dx > 0 ? 1.0 : -1.0;
+  const total = SLIDES.length;
+  const cur = currentIdx.current;
+  const nextIdx = (cur + (dir > 0 ? 1 : -1) + total) % total;
+
+  mat.uniforms.uDirection.value = dir;
+  mat.uniforms.uTextureNext.value = texturesRef.current[nextIdx];
+  mat.uniforms.uProgress.value = progress;
+  liveProgress.current = progress;
+
+  setActiveIdx(progress > 0.5 ? nextIdx : cur);
+}, []);
+
+  // 4. تعديل الـ onDragEnd ليتناسب مع الإحداثيات الجديدة
+const onDragEnd = useCallback((e) => {
+  if (!isDragging.current || !dragStart.current) {
+    isDragging.current = false;
+    return;
+  }
+  isDragging.current = false;
+
+  const mat = materialRef.current;
+  if (!mat) return;
+
+  const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+  const dx = endX - dragStart.current.x;
+  
+  // الباقي كما هو...
+  const dir = dx > 0 ? 1 : -1;
+  const cur = currentIdx.current;
+  const total = SLIDES.length;
+  const prog = liveProgress.current;
+  const targetIdx = (cur + (dir > 0 ? 1 : -1) + total) % total;
+
+  if (prog > 0.25) {
+    snapTo(targetIdx, prog);
+  } else {
+    snapBack(prog);
+    setActiveIdx(cur);
+  }
+  dragStart.current = null;
+}, [snapTo, snapBack]);
 
 
 
@@ -310,52 +358,80 @@ useGSAP(() => {
         {String(activeIdx + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
       </div>
 
-      <div ref={textContainerRef} className="absolute top-[50%] left-12 -translate-y-1/2 z-10 max-w-2xl">
-        <p className="text-white/50 text-[0.7rem] tracking-[0.4em] font-mono mb-2 overflow-hidden">
-          <span className="inline-block translate-y-full italic-text">DISRUPTIVE DESIGN STUDIO </span>
-        </p>
-        
-        <h1 
-          key={activeIdx} 
-          className="heroTitle text-white m-0 font-black leading-[0.9] mb-6 tracking-wide "
-          style={{ 
-            fontSize: 'clamp(3rem, 8vw, 7rem)', 
-            fontFamily: "'Bebas Neue', sans-serif" 
-          }}
-        >
-          {SLIDES[activeIdx].title}
-          <br />
-          <span className="text-red-500">
-            {SLIDES[activeIdx].subtitle}
-          </span>
-        </h1>
+      <div 
+  ref={textContainerRef} 
+  className="absolute md:top-[50%] bottom-0 md:left-12 md:-translate-y-1/2 z-10 md:max-w-2xl w-full p-5 pb-17"
+  // منع السحب عند الضغط بالماوس
+  onMouseDown={(e) => e.stopPropagation()}
+  // منع السحب عند اللمس على الموبايل
+  onTouchStart={(e) => e.stopPropagation()}
+>
+  <p className="text-white/50 text-[0.7rem] tracking-[0.4em] font-mono mb-2 overflow-hidden">
+    <span className="inline-block translate-y-full italic-text">DISRUPTIVE DESIGN STUDIO </span>
+  </p>
+  
+  <h1 
+    key={activeIdx} 
+    className="heroTitle text-white m-0 font-black leading-[0.9] mb-6 tracking-wide text-2xl"
+    style={{ 
+      fontSize: 'clamp(2.4rem, 8vw, 7rem)', 
+      fontFamily: "'Bebas Neue', sans-serif" 
+    }}
+  >
+    {SLIDES[activeIdx].title}
+    <br />
+    <span className="text-red-500">
+      {SLIDES[activeIdx].subtitle}
+    </span>
+  </h1>
 
-        <p className="heroP text-white/70 text-lg mb-8 font-light leading-relaxed max-w-md">
-          We create digital experiences that transcend the ordinary, 
-          merging art with high-performance technology.
-        </p>
+  <p className="heroP text-white/70 text-sm md:text-lg mb-8 font-light leading-relaxed max-w-md">
+    We create digital experiences that transcend the ordinary, 
+    merging art with high-performance technology.
+  </p>
 
-        <div className="heroB flex gap-4">
-          <button className="px-8 py-3 bg-white text-black font-bold uppercase tracking-wider hover:bg-orange-500 ">
-            Explore Work
-          </button>
-          <button className="px-8 py-3 border border-white/30 text-white font-bold uppercase tracking-wider hover:bg-white/10 transition-colors">
-            Contact Us
-          </button>
-        </div>
-      </div>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex gap-[0.6rem] items-center pointer-events-none">
-        {SLIDES.map((_, i) => (
-          <div 
-            key={i} 
-            className={`h-2 rounded-full transition-all duration-500 ease-in-out ${
-              i === activeIdx ? 'w-7 bg-white' : 'w-2 bg-white/35'
-            }`} 
-          />
-        ))}
-      </div>
-
+  <div className="heroB flex gap-4">
+    {/* الزراير طبيعي بتعمل stop propagation في المتصفحات الحديثة، لكن زيادة تأكيد */}
+    <button className="md:px-8 md:py-3 p-2 bg-white text-sm text-black font-bold uppercase tracking-wider hover:bg-orange-500 ">
+      Explore Work
+    </button>
+    <button className="md:px-8 md:py-3 p-2 border text-sm border-white/30 text-white font-bold uppercase tracking-wider hover:bg-white/10 transition-colors">
+      Contact Us
+    </button>
+  </div>
+</div>
+      {/* Pagination Dots */}
+<div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-10 flex gap-3 items-center">
+  {SLIDES.map((_, i) => (
+    <button
+      key={i}
+      // جعل النقطة قابلة للضغط للتنقل السريع
+      onClick={() => {
+        if (i !== activeIdx && !isAnimating.current) {
+          const dir = i > activeIdx ? 1 : -1;
+          materialRef.current.uniforms.uDirection.value = dir;
+          materialRef.current.uniforms.uTextureNext.value = texturesRef.current[i];
+          snapTo(i, 0);
+        }
+      }}
+      className="group relative py-4 focus:outline-none cursor-pointer pointer-events-auto"
+    >
+      {/* الخط الخارجي الباهت */}
+      <div 
+        className={`h-[2px] transition-all duration-700 ease-out rounded-full ${
+          i === activeIdx ? 'w-10 bg-red-600' : 'w-4 bg-white/20 group-hover:bg-white/50'
+        }`} 
+      />
+      
+      {/* رقم صغير يظهر فوق النقطة النشطة (اختياري) */}
+      {i === activeIdx && (
+        <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] font-mono text-red-500 animate-pulse">
+          0{i + 1}
+        </span>
+      )}
+    </button>
+  ))}
+</div>
       {/* Global Styles for Fonts and Custom Animation */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');

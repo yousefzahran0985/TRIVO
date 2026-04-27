@@ -52,7 +52,7 @@ const FeaturedProducts = () => {
               <img 
                 src={product.img} 
                 alt={product.name}
-                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
+                className="w-100 h-full transition-transform duration-700"
               />
             </div>
 

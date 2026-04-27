@@ -69,7 +69,7 @@ const About = () => {
             // Who we are
           </h2>
           
-          <h3 className="about-text text-6xl font-black leading-[0.9] tracking-tighter">
+          <h3 className="about-text md:text-6xl text-5xl font-black leading-[0.9] tracking-tighter">
             WE BLUR THE LINE <br /> 
             BETWEEN <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-white to-white/20">ART</span> & <br />
             TECHNOLOGY.
