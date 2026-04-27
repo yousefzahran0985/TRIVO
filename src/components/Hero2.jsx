@@ -390,11 +390,11 @@ useGSAP(() => {
         ref={textContainerRef} 
         className="absolute md:top-[50%] bottom-0 md:left-12 md:-translate-y-1/2 z-10 max-md:w-full p-5 pb-17"
         
-      >
-        {/* // منع السحب عند الضغط بالماوس
+        // منع السحب عند الضغط بالماوس
         onMouseDown={(e) => e.stopPropagation()}
         // منع السحب عند اللمس على الموبايل
-        onTouchStart={(e) => e.stopPropagation()} */}
+        onTouchStart={(e) => e.stopPropagation()}
+      >
   <p className="text-white/50 text-[0.7rem] tracking-[0.4em] font-mono mb-2 overflow-hidden">
     <span className="inline-block translate-y-full italic-text">DISRUPTIVE DESIGN STUDIO </span>
   </p>
