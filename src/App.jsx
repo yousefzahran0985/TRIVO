@@ -10,7 +10,7 @@ import About from "./components/About";
 import Offer from "./components/Offer";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import Header from "./components/Header";
+import Header from './components/Header';
 
 // تسجيل الملحقات
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
