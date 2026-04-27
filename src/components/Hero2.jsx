@@ -157,7 +157,7 @@ const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
     materialRef.current.uniforms.uResolution.value.y = newH;
   }
 };
-
+    container.parentElement.style.touchAction = 'pan-y';
     return () => {
       window.removeEventListener('resize', onResize);
       cancelAnimationFrame(animFrameRef.current);
@@ -166,6 +166,8 @@ const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
         container.removeChild(renderer.domElement);
     };
   }, []);
+
+  
 
   const snapTo = useCallback((targetIdx, fromProgress) => {
     const mat = materialRef.current;
@@ -214,19 +216,20 @@ const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
   // 2. تعديل الـ onDragStart
 const onDragStart = useCallback((e) => {
   if (isAnimating.current) return;
-  dragStart.current = {
-    x: e.touches ? e.touches[0].clientX : e.clientX,
-    y: e.touches ? e.touches[0].clientY : e.clientY
-  };
+  
+  // تخزين نقطة البداية بدقة
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  const y = e.touches ? e.touches[0].clientY : e.clientY;
+  
+  dragStart.current = { x, y };
   isDragging.current = true;
-  touchDirection.current = null; // ريست للاتجاه مع كل ضغطة جديدة
-  gsap.killTweensOf(gsapProxy.current);
+  touchDirection.current = null; 
+  
+  // مهم جداً: لا تعمل preventDefault هنا أبداً عشان متقفلش السكرول من أول لمسة
 }, []);
 
   const onDragMove = useCallback((e) => {
   if (!isDragging.current || !dragStart.current) return;
-  const mat = materialRef.current;
-  if (!mat) return;
 
   const currentX = e.touches ? e.touches[0].clientX : e.clientX;
   const currentY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -234,27 +237,33 @@ const onDragStart = useCallback((e) => {
   const dx = currentX - dragStart.current.x;
   const dy = currentY - dragStart.current.y;
 
-  // تحديد الاتجاه في أول حركة
+  // لو لسه محددناش الاتجاه
   if (!touchDirection.current) {
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
-      touchDirection.current = 'horizontal';
-    } else if (Math.abs(dy) > 10) {
+    // لو الحركة رأسية أكتر من الأفقية، فك السحب فوراً وسيب الموبايل يسكرل
+    if (Math.abs(dy) > Math.abs(dx)) {
       touchDirection.current = 'vertical';
-      isDragging.current = false; // فك السحب فوراً عشان السكرول يشتغل
-      return;
+      isDragging.current = false; 
+      return; // اخرج ومتمسحش الـ Event
+    } else if (Math.abs(dx) > 10) {
+      touchDirection.current = 'horizontal';
+    } else {
+      return; // لسه الحركة صغيرة جداً (jitter)
     }
   }
 
-  // التعديل السحري هنا:
-  if (touchDirection.current === 'horizontal') {
-    // لو بنقلب صور، نمنع السكرول الرأسي عشان الصفحة متهزش
-    if (e.cancelable) e.preventDefault(); 
-  } else {
-    // لو الاتجاه رأسي، اخرج فوراً وسيب المتصفح يعمل سكرول طبيعي
+  // لو تأكدنا إنها حركة رأسية، اخرج
+  if (touchDirection.current === 'vertical') {
+    isDragging.current = false;
     return;
   }
 
-  // باقي كود الـ Progress بتاعك زي ما هو...
+  // لو وصلنا هنا يبقى المستخدم بيقلب صور "أفقياً" فعلاً
+  // هنا بس نمنع السكرول عشان السلايدر يشتغل بنعومة
+  if (e.cancelable) e.preventDefault();
+
+  const mat = materialRef.current;
+  if (!mat) return;
+
   const W = mountRef.current.clientWidth;
   const rawProg = Math.abs(dx) / (W * 0.6);
   const progress = Math.min(rawProg, 1);
@@ -262,7 +271,7 @@ const onDragStart = useCallback((e) => {
   const dir = dx > 0 ? 1.0 : -1.0;
   const total = SLIDES.length;
   const cur = currentIdx.current;
-  const nextIdx = (cur + (dir > 0 ? 1 : -1) + total) % total;
+  const nextIdx = (cur - (dx > 0 ? 1 : -1) + total) % total;
 
   mat.uniforms.uDirection.value = dir;
   mat.uniforms.uTextureNext.value = texturesRef.current[nextIdx];
@@ -271,7 +280,6 @@ const onDragStart = useCallback((e) => {
 
   setActiveIdx(progress > 0.5 ? nextIdx : cur);
 }, []);
-
   // 4. تعديل الـ onDragEnd ليتناسب مع الإحداثيات الجديدة
 const onDragEnd = useCallback((e) => {
   if (!isDragging.current || !dragStart.current) {
@@ -364,6 +372,10 @@ useGSAP(() => {
   return (
     <div
       className="relative w-full h-screen bg-black overflow-hidden cursor-grab select-none touch-pan-y"
+      style={{ 
+        touchAction: 'pan-y', // بيسمح بالسكرول الرأسي دايماً
+        WebkitOverflowScrolling: 'touch' // لمسة نعومة لأجهزة iOS
+      }}
       onMouseDown={onDragStart}
       onMouseMove={onDragMove}
       onMouseUp={onDragEnd}
