@@ -369,7 +369,7 @@ useGSAP(() => {
 
   return (
     <div
-      className="relative w-full h-screen bg-black overflow-hidden cursor-grab select-none"
+      className="relative w-full h-screen bg-black overflow-hidden cursor-grab select-none touch-pan-y"
       onMouseDown={onDragStart}
       onMouseMove={onDragMove}
       onMouseUp={onDragEnd}

@@ -4,7 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-// import Hero2 from "./components/Hero2";
+import Hero2 from "./components/Hero2";
 import FeaturedProducts from "./components/FeaturedProducts";
 import About from "./components/About";
 import Offer from "./components/Offer";
@@ -33,7 +33,7 @@ function App() {
     <div className="bg-black" ref={wrapperRef} id="smooth-wrapper">
       <div ref={mainRef} id="smooth-content">
         <Header />
-        {/* <Hero2 /> */}
+        <Hero2 />
         {/* السكشن الجديد */}
         <FeaturedProducts />
         <About />
