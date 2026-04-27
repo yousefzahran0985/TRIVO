@@ -35,7 +35,7 @@ const About = () => {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className="min-h-screen bg-black text-white py-32 px-12 relative overflow-hidden">
+    <section ref={containerRef} className="min-h-screen bg-black text-white py-32 px-6 relative overflow-hidden">
       
       {/* نص خلفي كبير جداً يتحرك بالـ data-speed (Parallax) */}
       <div 
@@ -89,13 +89,6 @@ const About = () => {
           </div>
         </div>
 
-      </div>
-
-      {/* تفاصيل تقنية في الأركان */}
-      <div className="absolute bottom-10 right-12 flex gap-10 text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">
-        <div>Est. 2026</div>
-        <div>Cairo / Egypt</div>
-        <div>Status: Disrupting</div>
       </div>
 
     </section>

@@ -21,7 +21,7 @@ const Contact = () => {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className="min-h-screen bg-black text-white py-32 px-12 relative overflow-hidden">
+    <section ref={containerRef} className="min-h-screen bg-black text-white pt-32 pb-10 px-6 relative overflow-hidden">
       
       {/* عنوان جانبي ضخم للزينة */}
       <div className="absolute -right-20 top-1/2 -translate-y-1/2 rotate-90 text-[10rem] font-black text-white/5 pointer-events-none select-none uppercase">
@@ -89,7 +89,7 @@ const Contact = () => {
         </div>
 
         {/* الجانب الأيمن: فورم التواصل */}
-        <div className="contact-item bg-[#0a0a0a] p-10 border border-white/5 rounded-sm">
+        <div className="contact-item bg-[#0a0a0a] p-3 border border-white/5 rounded-sm">
           <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div className="space-y-2">
               <label className="text-[10px] uppercase tracking-widest text-white/40 ml-1">Full Name</label>

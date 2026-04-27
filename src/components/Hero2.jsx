@@ -30,18 +30,38 @@ const fragmentShader = `
   uniform sampler2D uMapTexture;
   uniform float uProgress;
   uniform float uDirection;
+  uniform vec4 uResolution; // (width, height, image_width, image_height)
 
   void main() {
-    vec4 displacement = texture2D(uMapTexture, vUv);
+    vec2 s = uResolution.xy; // أبعاد الشاشة
+    vec2 i = uResolution.zw; // أبعاد الصورة (مثلاً 1920x1080)
+    
+    // معادلة الـ Background Cover
+    float rs = s.x / s.y;
+    float ri = i.x / i.y;
+    vec2 newUv = vUv;
+
+    if (rs < ri) {
+        // الشاشة أرفع من الصورة (حالة الموبايل)
+        vec2 v = vec2(s.x * i.y / s.y, i.y);
+        // التعديل هنا: شيلنا الـ 0.5 وخلينا الضرب في 1.0 عشان يثبت اليمين
+        // أو بنطرح الفرق بالكامل من الـ X عشان نجيب آخر الصورة يمين
+        newUv.x = vUv.x * (v.x / i.x) + (1.0 - v.x / i.x);
+    } else {
+        // الشاشة أعرض من الصورة
+        vec2 v = vec2(i.x, s.y * i.x / s.x);
+        newUv.y = vUv.y * (v.y / i.y) + 0.5 * (1.0 - v.y / i.y);
+    }
+
+    vec4 displacement = texture2D(uMapTexture, newUv);
     float d = displacement.r;
 
-    // اتجاه التكسير يعتمد على uDirection
     float df1 = d * 0.4 * uProgress * uDirection;
-    vec2 distorted1 = vUv - vec2(df1, 0.0);
+    vec2 distorted1 = newUv - vec2(df1, 0.0);
     vec4 tex1 = texture2D(uTextureCurrent, distorted1);
 
     float df2 = (1.0 - d) * 0.4 * (1.0 - uProgress) * uDirection;
-    vec2 distorted2 = vUv + vec2(df2, 0.0);
+    vec2 distorted2 = newUv + vec2(df2, 0.0);
     vec4 tex2 = texture2D(uTextureNext, distorted2);
 
     gl_FragColor = mix(tex1, tex2, uProgress);
@@ -110,16 +130,19 @@ const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
     const mapTex   = loader.load('/map.jpg');
 
     const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms: {
-        uTextureCurrent: { value: textures[0] },
-        uTextureNext:    { value: textures[1] },
-        uMapTexture:     { value: mapTex },
-        uProgress:       { value: 0 },
-        uDirection:      { value: 1.0 },
-      },
-    });
+  vertexShader,
+  fragmentShader,
+  uniforms: {
+    uTextureCurrent: { value: textures[0] },
+    uTextureNext:    { value: textures[1] },
+    uMapTexture:     { value: mapTex },
+    uProgress:       { value: 0 },
+    uDirection:      { value: 1.0 },
+    // ملحوظة: لو صورك 1080x1920 (طولية) غير الأرقام دي. 
+    // لو صورك 1920x1080 (عرضية) سيبها زي ما هي.
+    uResolution:     { value: new THREE.Vector4(W, H, 1920, 1080) }, 
+  },
+});
     materialRef.current = material;
 
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
@@ -132,9 +155,14 @@ const touchDirection = useRef(null); // 'horizontal', 'vertical', or null
     animate();
 
     const onResize = () => {
-      renderer.setSize(container.clientWidth, container.clientHeight);
-    };
-    window.addEventListener('resize', onResize);
+  const newW = container.clientWidth;
+  const newH = container.clientHeight;
+  renderer.setSize(newW, newH);
+  if (materialRef.current) {
+    materialRef.current.uniforms.uResolution.value.x = newW;
+    materialRef.current.uniforms.uResolution.value.y = newH;
+  }
+};
 
     return () => {
       window.removeEventListener('resize', onResize);
@@ -352,20 +380,20 @@ useGSAP(() => {
     >
       <div ref={mountRef} className="absolute inset-0" />
 
-      <div className="absolute inset-0 z-2 pointer-events-none bg-linear-to-t from-black/70 via-transparent to-black/20" />
+      <div className="absolute inset-0 z-2 pointer-events-none bg-linear-to-t from-black/70 via-transparent to-black/20 " />
 
       <div className="absolute top-8 right-10 z-10 text-white/50 text-[0.75rem] tracking-[0.3em] font-mono pointer-events-none">
         {String(activeIdx + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
       </div>
 
       <div 
-  ref={textContainerRef} 
-  className="absolute md:top-[50%] bottom-0 md:left-12 md:-translate-y-1/2 z-10 md:max-w-2xl w-full p-5 pb-17"
-  // منع السحب عند الضغط بالماوس
-  onMouseDown={(e) => e.stopPropagation()}
-  // منع السحب عند اللمس على الموبايل
-  onTouchStart={(e) => e.stopPropagation()}
->
+        ref={textContainerRef} 
+        className="absolute md:top-[50%] bottom-0 md:left-12 md:-translate-y-1/2 z-10 max-md:w-full p-5 pb-17"
+        // منع السحب عند الضغط بالماوس
+        onMouseDown={(e) => e.stopPropagation()}
+        // منع السحب عند اللمس على الموبايل
+        onTouchStart={(e) => e.stopPropagation()}
+      >
   <p className="text-white/50 text-[0.7rem] tracking-[0.4em] font-mono mb-2 overflow-hidden">
     <span className="inline-block translate-y-full italic-text">DISRUPTIVE DESIGN STUDIO </span>
   </p>
@@ -374,7 +402,7 @@ useGSAP(() => {
     key={activeIdx} 
     className="heroTitle text-white m-0 font-black leading-[0.9] mb-6 tracking-wide text-2xl"
     style={{ 
-      fontSize: 'clamp(2.4rem, 8vw, 7rem)', 
+      fontSize: 'clamp(5rem, 8vw, 7rem)', 
       fontFamily: "'Bebas Neue', sans-serif" 
     }}
   >

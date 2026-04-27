@@ -9,7 +9,7 @@ const Footer = () => {
   useGSAP(() => {
     // أنميشن للوجو العملاق (Scale & Shift) مع السكرول
     gsap.fromTo(logoRef.current, 
-      { scale: 0.8, y: -50, opacity: 0 },
+      { scale: 0.7, y: -50, opacity: 0 },
       {
         scale: 1,
         y: 0,
@@ -25,7 +25,7 @@ const Footer = () => {
   }, { scope: footerRef });
 
   return (
-    <footer ref={footerRef} className="bg-black text-white pt-3 pb-8 px-12 border-t border-white/10 relative overflow-hidden">
+    <footer ref={footerRef} className="bg-black text-white pt-3 pb-8 px-6  relative overflow-hidden">
       
       {/* خلفية حمراء باهتة جداً على شكل حرف V في الزاوية */}
       <div className="absolute top-0 right-0 h-full w-[30%] opacity-[0.03] z-0 pointer-events-none">
