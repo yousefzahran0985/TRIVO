@@ -45,7 +45,7 @@ const FeaturedProducts = () => {
   }, { scope: sectionRef });
 
   return (
-    <section ref={sectionRef} className="min-h-screen bg-black py-32 px-6 md:px-12 relative overflow-hidden">
+    <section ref={sectionRef} className="-mt-[70vh] min-h-screen bg-black py-32 px-6 md:px-12 relative overflow-hidden">
       
       {/* الرأس: العنوان + الزرار */}
       <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">

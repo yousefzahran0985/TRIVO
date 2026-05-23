@@ -67,7 +67,7 @@ const Hero = () => {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
-        end: "+=400%",
+        end: "+=300%",
         scrub: 0.5,
         pin: true,
         anticipatePin: 1,
@@ -90,11 +90,6 @@ const Hero = () => {
         </div>
       </section>
 
-      <section className="relative z-30 h-275 bg-white -mt-[50vh] flex items-center justify-center rounded-t-[70%_30px] md:rounded-t-[70%_100px] shadow-[0_-30px_50px_rgba(0,0,0,0.3)]">
-        <h1 className="md:text-[130px] text-5xl font-bold text-center">
-          New Section
-        </h1>
-      </section>
     </>
   );
 };
