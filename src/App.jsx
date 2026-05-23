@@ -4,7 +4,6 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-import Hero2 from "./components/Hero2";
 import Hero from "./components/Hero";
 import FeaturedProducts from "./components/FeaturedProducts";
 import About from "./components/About";
@@ -32,8 +31,11 @@ function App() {
 
   return (
     <div className="bg-black" ref={wrapperRef} id="smooth-wrapper">
+      
+      {/* الحل السحري: الهيدر هنا بره الـ smooth-content عشان الـ transform مياكلوش ويطيره لفوق */}
+      <Header />
+
       <div ref={mainRef} id="smooth-content">
-        <Header />
         <Hero />
         {/* السكشن الجديد */}
         <FeaturedProducts />

@@ -8,33 +8,33 @@ gsap.registerPlugin(ScrollTrigger);
 const About = () => {
   const containerRef = useRef(null);
   const textRef = useRef(null);
-  const imageRef = useRef(null); // ريف خاص بالصورة
+  const imageRef = useRef(null); 
 
   useGSAP(() => {
-    // 1. أنميشن النصوص (كما هو مع تحسين بسيط)
+    // 1. تعديل أنميشن النصوص ليظهر بدري جداً بمجرد دخول السكشن للشاشة
     gsap.from(".about-text", {
       scrollTrigger: {
         trigger: textRef.current,
-        start: "center 85%",
-        end: "top 50%",
+        start: "top 95%", // التعديل هنا: هيبدأ أول ما السكشن يدخل من تحت المتصفح علطول
+        end: "bottom 80%", // هينتهي والسكشن لسه في النص التحتاني عشان يلحق يظهر بالكامل
         scrub: 1,
       },
-      y: 50,
+      y: 60,            // زيادة الزقة لفوق خفيف عشان تديك إحساس Parallax شيك مع الظهور البدري
       opacity: 0,
-      stagger: 0.1,
+      stagger: 0.08,    // تقليل الـ stagger حاجة بسيطة عشان النصوص تطلع ورا بعض بسلاسة أسرع
       ease: "power2.out"
     });
 
-    // 2. السحر هنا: تحويل الصورة من أبيض وأسود لألوان مع السكرول
+    // 2. تلوين الصورة من أبيض وأسود لألوان مع السكرول
     gsap.to(imageRef.current, {
       scrollTrigger: {
         trigger: containerRef.current,
-        start: "top 40%", // يبدأ التلوين لما السكشن يقرب من نص الشاشة
-        end: "center center", // ينتهي التلوين لما السكشن يتوسط الشاشة
+        start: "top 50%", // عدلتها لـ 50% عشان تتناسق مع ظهور النص البدري
+        end: "center center", 
         scrub: true,
       },
-      filter: "grayscale(0%) brightness(100%)", // يرجع الألوان طبيعية
-      scale: 1.1, // زووم خفيف مع الحركة
+      filter: "grayscale(0%) brightness(100%)", 
+      scale: 1.05, // تقليل الـ scale لـ 1.05 عشان الـ zoom ميبقاش عنيف بزيادة ويقشط أطراف الصورة
       ease: "none"
     });
 
@@ -68,17 +68,16 @@ const About = () => {
               src="/hero4.png" 
               alt="About Us"
               className="w-full h-full object-cover transition-all"
-              // القيمة الابتدائية تكون أبيض وأسود ومعتمة قليلاً
               style={{ filter: "grayscale(100%) brightness(70%)" }}
             />
           </div>
           
           {/* المربع الأحمر الجمالي */}
+          {/* تعديل: ضفنا كلاس bg-square هنا عشان الـ ScrollTrigger يقدر يلقطه ويحركه بارالاكس */}
           <div
-            className="absolute -bottom-10 -right-10 w-48 h-48 bg-red-600 z-[-1]"
+            className="bg-square absolute -bottom-10 -right-10 w-48 h-48 bg-red-600 z-[-1]"
             data-speed="1.2"
           />
-
         </div>
 
         {/* الجانب الأيمن: المحتوى */}
@@ -103,7 +102,7 @@ const About = () => {
           </p>
 
           <div className="about-text pt-6">
-            <button className="group relative px-10 py-4 overflow-hidden border border-white/10 transition-all">
+            <button className="group relative px-10 py-4 overflow-hidden border border-white/10 transition-all cursor-pointer">
               <span className="relative z-10 font-bold uppercase tracking-widest text-xs group-hover:text-white transition-colors duration-500">
                 Our Philosophy
               </span>

@@ -2,35 +2,41 @@ import React, { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { HiOutlineMenuAlt3, HiX } from 'react-icons/hi'; // أيقونات منيو شيك
+import { HiOutlineMenuAlt3, HiX } from 'react-icons/hi';
+import { FiShoppingBag, FiUser } from 'react-icons/fi'; // أيقونات براندات فخمة ومودرن
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Header = () => {
   const headerRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(false); // حالة القائمة في الموبايل
+  const [isOpen, setIsOpen] = useState(false);
 
-  // جوه Header.jsx
-useGSAP(() => {
-  const showAnim = gsap.from(headerRef.current, { 
-    yPercent: -150,
-    paused: true,
-    duration: 0.3, // سرعة أكبر عشان الاستجابة
-    ease: "none" // "none" أفضل في السكرول لسرعة الاستجابة
-  }).progress(1);
+  useGSAP(() => {
+    // تأمين: لو المنيو مفتوحة في الموبايل، ميعملش أي حركة للهيدر
+    if (isOpen) return;
 
-  ScrollTrigger.create({
-    start: "top top",
-    end: 99999,
-    onUpdate: (self) => {
-      if (!isOpen) {
-        // إضافة check بسيط للتأكد إن الحركة مش محبوسة
-        if (self.direction === -1) showAnim.play();
-        else showAnim.reverse();
+    ScrollTrigger.create({
+      start: "top top",
+      end: "max",
+      onUpdate: (self) => {
+        // self.direction === 1 (سكرول لتحت -> اخفي الهيدر)
+        // self.direction === -1 (سكرول لفوق -> ظهر الهيدر)
+        if (self.direction === 1) {
+          gsap.to(headerRef.current, { 
+            yPercent: -150, 
+            duration: 0.3, 
+            ease: "power2.out" 
+          });
+        } else if (self.direction === -1) {
+          gsap.to(headerRef.current, { 
+            yPercent: 0, // يرجعه مكانه الطبيعي بالظبط
+            duration: 0.3, 
+            ease: "power2.out" 
+          });
+        }
       }
-    }
-  });
-}, { scope: headerRef, dependencies: [isOpen] });
+    });
+  }, { scope: headerRef, dependencies: [isOpen] }); // إعادة بناء الـ trigger لو حالة الـ isOpen اتغيرت
 
   const navLinks = ['Collection', 'About', 'Archive', 'Contact'];
 
@@ -38,7 +44,7 @@ useGSAP(() => {
     <>
       <header 
         ref={headerRef} 
-        className="fixed top-4 left-0 right-0 mx-auto w-[92%] z-[100] px-6 md:px-10 py-4 flex justify-between items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-2xl"
+        className="fixed top-4 left-0 right-0 mx-auto w-[92%] z-[100] px-6 md:px-10 py-4 flex justify-between items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-2xl will-change-transform"
       >
         {/* اللوجو */}
         <div className="flex items-center gap-2 group cursor-pointer relative z-[101]">
@@ -55,7 +61,7 @@ useGSAP(() => {
             <a 
               key={item} 
               href={`#${item.toLowerCase()}`}
-              className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/60 hover:text-red-500 transition-colors"
+              className="text-[14px] font-medium uppercase tracking-[0.2em] text-white/90 hover:text-red-500 transition-colors"
             >
               {item}
             </a>
@@ -64,11 +70,19 @@ useGSAP(() => {
 
         {/* الأزرار + أيقونة الموبايل */}
         <div className="flex items-center gap-4 md:gap-6 relative z-[101]">
-          <button className="bg-red-600 hover:bg-white hover:text-black transition-all duration-500 px-5 md:px-6 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white">
-            Cart (0)
+          <button className="text-white/70 hover:text-white transition-colors duration-300 cursor-pointer p-1" title="Account">
+            <FiUser size={23} className="transition-transform duration-300 hover:scale-110" />
           </button>
 
-          {/* أيقونة المنيو (تظهر في الموبايل فقط) */}
+          {/* حاوية أيقونة السلة مع العداد */}
+          <button className="relative text-white/70 hover:text-white transition-colors duration-300 cursor-pointer p-1" title="Cart">
+            <FiShoppingBag size={23} className="transition-transform duration-300 hover:scale-110" />
+            {/* بادج عداد المنتجات */}
+            <span className="absolute -top-1 -right-1.5 bg-red-600 text-white font-mono text-[14px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md">
+              0
+            </span>
+          </button>
+          
           <button 
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-white hover:text-red-500 transition-colors"
@@ -100,14 +114,12 @@ useGSAP(() => {
             </a>
           ))}
           
-          {/* لمسة إضافية: معلومات تحت في المنيو */}
           <div className="absolute bottom-12 text-white/20 font-mono text-[10px] tracking-widest">
             TRIVO © 2026 / CUSTOM APPAREL
           </div>
         </div>
       </header>
 
-      {/* خلفية غامقة لما المنيو تفتح */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/40 z-[99] md:hidden"
